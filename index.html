@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="sl" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Zdrav</title>
+  <meta name="description" content="Baza zdravih obrokov — dodajaj recepte in naključno izberi obrok, ko zmanjka idej za zajtrk, kosilo ali večerjo." />
+  <meta name="theme-color" content="#0d1410" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Zdrav" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="icons/icon-192.png" type="image/png" />
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="hero">
+    <div class="brand">
+      <span class="brand-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="M12 3 A11.25 11.25 0 0 1 12 21 A11.25 11.25 0 0 1 12 3 Z" fill="currentColor"/>
+        </svg>
+      </span>
+      <div class="brand-text">
+        <h1>Zdrav</h1>
+        <p class="tag">Baza zdravih obrokov</p>
+      </div>
+    </div>
+
+    <button id="randomBtn" class="random-btn" type="button">
+      <span aria-hidden="true">🎲</span> Presenečenje
+    </button>
+  </header>
+
+  <nav class="tabs" id="tabs" aria-label="Kategorije obrokov"></nav>
+
+  <main class="panel">
+    <div class="panel-head">
+      <h2 id="panelTitle"></h2>
+      <button id="addMealBtn" class="add-btn" type="button">+ Dodaj obrok</button>
+    </div>
+
+    <div class="meals-grid" id="mealsGrid"></div>
+  </main>
+
+  <!-- ============ MODAL: dodaj obrok ============ -->
+  <div class="modal-overlay" id="addOverlay" hidden>
+    <div class="modal" role="dialog" aria-modal="true">
+      <h2 class="modal-title">Nov obrok</h2>
+
+      <label class="field-label">Kategorija</label>
+      <select id="addCategory" class="field-input"></select>
+
+      <label class="field-label">Ime obroka</label>
+      <input id="addName" class="field-input" type="text" placeholder="npr. Ovsena kaša z jagodami" autocomplete="off" />
+
+      <label class="field-label">Sestavine</label>
+      <textarea id="addIngredients" class="field-input field-textarea" placeholder="Ena sestavina na vrstico ali kratek opis…"></textarea>
+
+      <label class="field-label">Slika</label>
+      <div class="image-pick">
+        <img id="addPreview" class="image-preview" hidden alt="" />
+        <label class="image-btn">
+          📷 Izberi sliko
+          <input id="addImageFile" type="file" accept="image/*" hidden />
+        </label>
+      </div>
+
+      <div class="modal-actions">
+        <button id="addCancel" class="tool-btn" type="button">Prekliči</button>
+        <button id="addConfirm" class="tool-btn primary" type="button">Shrani obrok</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ MODAL: naključni izbor ============ -->
+  <div class="modal-overlay" id="randomOverlay" hidden>
+    <div class="modal" role="dialog" aria-modal="true">
+      <button class="modal-close" id="randomClose" type="button" aria-label="Zapri">✕</button>
+
+      <!-- korak 1: izbira kategorije -->
+      <div id="randomPickStep">
+        <h2 class="modal-title">Katero kategorijo?</h2>
+        <div class="cat-pick-grid" id="catPickGrid"></div>
+        <div class="modal-actions">
+          <button id="randomConfirm" class="tool-btn primary" type="button" disabled>Potrdi</button>
+        </div>
+      </div>
+
+      <!-- korak 2: rezultat -->
+      <div id="randomResultStep" hidden>
+        <div id="randomResultBody"></div>
+        <div class="modal-actions">
+          <button id="randomBack" class="tool-btn" type="button">← Nazaj</button>
+          <button id="randomReroll" class="tool-btn primary" type="button">🎲 Znova</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/db.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

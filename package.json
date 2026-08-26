@@ -1,0 +1,10 @@
+{
+  "name": "zdrav",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Zdrav — baza zdravih obrokov in naključni izbor",
+  "scripts": {
+    "start": "node serve.js",
+    "icons": "node tools/make-icons.js"
+  }
+}

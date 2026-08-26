@@ -1,0 +1,376 @@
+/* ================================================================
+   ZDRAV — slog
+   ================================================================ */
+
+:root {
+  --bg:            #0d1410;
+  --bg-tint:       #101a14;
+  --card:          #16211a;
+  --card-2:        #1c2921;
+  --text:          #eef5ee;
+  --text-soft:     #9db5a4;
+  --line:          #253830;
+  --line-soft:     #1e2e26;
+  --accent:        #22c55e;
+  --accent-2:      #16a34a;
+  --danger:        #ef4444;
+  --shadow-sm:     0 1px 2px rgba(0,0,0,.35);
+  --shadow:        0 1px 2px rgba(0,0,0,.3), 0 10px 24px -10px rgba(0,0,0,.6);
+  --shadow-lg:     0 16px 40px -12px rgba(0,0,0,.65), 0 2px 8px rgba(0,0,0,.35);
+  --radius:        16px;
+  --radius-sm:     11px;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  background-image: radial-gradient(120% 60% at 50% 0%, var(--bg-tint) 0%, var(--bg) 60%);
+  background-attachment: fixed;
+  color: var(--text);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.4;
+  -webkit-font-smoothing: antialiased;
+}
+
+button, input, textarea, select {
+  font: inherit;
+  color: inherit;
+}
+
+/* ---------- Glava ---------- */
+.hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+  padding: 28px 20px 14px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.brand { display: flex; align-items: center; gap: 14px; }
+
+.brand-icon {
+  flex: none;
+  width: 52px;
+  height: 52px;
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(140deg, var(--accent), var(--accent-2));
+  box-shadow: 0 10px 24px -8px color-mix(in srgb, var(--accent) 70%, transparent);
+  color: #fff;
+}
+.brand-icon svg { width: 26px; height: 26px; }
+
+.brand-text h1 {
+  margin: 0;
+  font-size: 30px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  background: linear-gradient(90deg, #fff, #c8f5d6);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.brand-text .tag { margin: 2px 0 0; color: var(--text-soft); font-size: 14px; }
+
+.random-btn {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(140deg, var(--accent), var(--accent-2));
+  border: none;
+  color: #06210f;
+  font-weight: 700;
+  font-size: 15px;
+  padding: 12px 20px;
+  border-radius: 999px;
+  cursor: pointer;
+  box-shadow: 0 10px 24px -10px color-mix(in srgb, var(--accent) 80%, transparent);
+}
+.random-btn:hover { filter: brightness(1.06); }
+.random-btn:active { transform: translateY(1px); }
+
+/* ---------- Zavihki kategorij ---------- */
+.tabs {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding: 6px 20px 18px;
+  max-width: 900px;
+  margin: 0 auto;
+  scrollbar-width: none;
+}
+.tabs::-webkit-scrollbar { display: none; }
+
+.tab {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 18px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  color: var(--text-soft);
+  font-weight: 600;
+  font-size: 14.5px;
+  cursor: pointer;
+}
+.tab:hover { border-color: color-mix(in srgb, var(--accent) 35%, var(--line)); }
+.tab.active {
+  background: var(--card-2);
+  color: var(--text);
+  border-color: color-mix(in srgb, var(--accent) 55%, var(--line));
+  box-shadow: 0 6px 18px -10px color-mix(in srgb, var(--accent) 70%, transparent);
+}
+
+/* ---------- Panel ---------- */
+.panel { max-width: 900px; margin: 0 auto; padding: 4px 20px 60px; }
+
+.panel-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 10px 0 16px;
+}
+.panel-head h2 { margin: 0; font-size: 20px; font-weight: 700; }
+
+.add-btn {
+  background: var(--card-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 9px 15px;
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--accent);
+  white-space: nowrap;
+}
+.add-btn:hover { border-color: color-mix(in srgb, var(--accent) 50%, var(--line)); }
+
+/* ---------- Mreža obrokov ---------- */
+.meals-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 14px;
+}
+
+.empty-hint {
+  grid-column: 1 / -1;
+  color: var(--text-soft);
+  font-size: 14px;
+  padding: 40px 4px;
+  text-align: center;
+}
+
+.meal-card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.meal-thumb {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  background: var(--card-2);
+  display: block;
+}
+
+.meal-thumb-placeholder {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--card-2);
+  color: var(--line);
+  font-size: 34px;
+}
+
+.meal-body { padding: 10px 12px 12px; display: flex; flex-direction: column; gap: 6px; flex: 1; }
+.meal-name { font-weight: 700; font-size: 14.5px; }
+.meal-ingredients {
+  color: var(--text-soft);
+  font-size: 12.5px;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  flex: 1;
+}
+
+.meal-del {
+  align-self: flex-end;
+  background: transparent;
+  border: none;
+  color: var(--text-soft);
+  cursor: pointer;
+  font-size: 13px;
+  padding: 4px 6px;
+  border-radius: 6px;
+}
+.meal-del:hover { color: var(--danger); background: var(--card-2); }
+
+/* ---------- Modali ---------- */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(4,8,6,.66);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 50;
+}
+.modal-overlay[hidden] { display: none; }
+
+.modal {
+  position: relative;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  padding: 22px;
+  width: 100%;
+  max-width: 440px;
+  max-height: 88vh;
+  overflow-y: auto;
+}
+
+.modal-title { margin: 0 0 14px; font-size: 18px; font-weight: 700; }
+
+.modal-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background: transparent;
+  border: none;
+  color: var(--text-soft);
+  font-size: 16px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+.modal-close:hover { color: var(--text); background: var(--card-2); }
+
+.field-label { display: block; font-size: 13px; color: var(--text-soft); margin: 12px 0 5px; }
+.field-input {
+  width: 100%;
+  background: var(--card-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  outline: none;
+}
+.field-input:focus { border-color: color-mix(in srgb, var(--accent) 50%, var(--line)); }
+.field-textarea { min-height: 80px; resize: vertical; font-family: inherit; }
+
+.image-pick { display: flex; align-items: center; gap: 12px; margin-top: 4px; }
+.image-preview {
+  width: 72px;
+  height: 72px;
+  border-radius: 10px;
+  object-fit: cover;
+  border: 1px solid var(--line);
+}
+.image-btn {
+  background: var(--card-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 9px 14px;
+  cursor: pointer;
+  font-size: 13.5px;
+  color: var(--text-soft);
+}
+.image-btn:hover { border-color: color-mix(in srgb, var(--accent) 50%, var(--line)); }
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.tool-btn {
+  background: var(--card-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 10px 16px;
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--text);
+}
+.tool-btn:hover { border-color: color-mix(in srgb, var(--accent) 50%, var(--line)); }
+.tool-btn.primary {
+  background: linear-gradient(140deg, var(--accent), var(--accent-2));
+  border-color: transparent;
+  color: #06210f;
+}
+.tool-btn:disabled { opacity: .5; cursor: not-allowed; }
+
+/* ---------- Izbira kategorije v modalu naključnega izbora ---------- */
+.cat-pick-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+.cat-pick-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 16px 8px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--line);
+  background: var(--card-2);
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 13.5px;
+  color: var(--text-soft);
+}
+.cat-pick-btn .cat-emoji { font-size: 22px; }
+.cat-pick-btn:hover { border-color: color-mix(in srgb, var(--accent) 45%, var(--line)); }
+.cat-pick-btn.selected {
+  border-color: var(--accent);
+  color: var(--text);
+  background: color-mix(in srgb, var(--accent) 14%, var(--card-2));
+}
+
+/* ---------- Rezultat naključnega izbora ---------- */
+.result-image {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  background: var(--card-2);
+  display: block;
+}
+.result-placeholder {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border-radius: var(--radius-sm);
+  background: var(--card-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 44px;
+  color: var(--line);
+}
+.result-name { font-size: 19px; font-weight: 800; margin: 14px 0 6px; }
+.result-ingredients { color: var(--text-soft); font-size: 14px; white-space: pre-wrap; }
+.result-empty { color: var(--text-soft); text-align: center; padding: 30px 6px; font-size: 14.5px; }
+
+@media (max-width: 480px) {
+  .brand-text h1 { font-size: 26px; }
+  .hero { flex-direction: column; align-items: flex-start; }
+  .random-btn { align-self: stretch; justify-content: center; }
+}
