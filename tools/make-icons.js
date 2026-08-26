@@ -1,6 +1,6 @@
 /* Izriše ikone PNG iz iste risbe kot icon.svg — brez zunanjih odvisnosti.
    Zagon: node tools/make-icons.js
-   Jabolko = krog + pecelj (kapsula) + listič (mnogokotnik), glej icon.svg za isto risbo. */
+   Hruška = dva kroga (vrat + telo) + pecelj (kapsula) + listič (mnogokotnik), glej icon.svg. */
 var zlib = require('zlib'), fs = require('fs'), path = require('path');
 
 var OUT = path.join(__dirname, '..', 'icons');
@@ -11,10 +11,11 @@ var GRAD_B = [0x16, 0xa3, 0x4a];
 var BODY = [0xff, 0xff, 0xff];
 var ACCENT = [0x16, 0xa3, 0x4a];
 
-var BODY_CIRCLE = { cx: 12, cy: 14, r: 7.2 };
-var STEM = { x1: 12, y1: 6.8, x2: 12, y2: 3.6, halfW: 0.75 };
+var NECK_CIRCLE = { cx: 12, cy: 9.8, r: 4 };
+var BODY_CIRCLE = { cx: 12, cy: 15.3, r: 7 };
+var STEM = { x1: 12, y1: 5.8, x2: 12, y2: 3.2, halfW: 0.7 };
 // Približek zaobljenega lista (glej ukrivljeno pot v icon.svg).
-var LEAF_POLY = [12, 4.9, 13, 3.8, 14.5, 3.3, 16, 3.7, 15.3, 4.8, 13.7, 5.3];
+var LEAF_POLY = [12, 4.1, 13, 3.1, 14.2, 2.4, 15.7, 3, 15.2, 4.1, 13.9, 4.9];
 var ART = { cx: 12, cy: 12 };
 
 function insideRoundRect(x, y, w, h, r) {
@@ -115,9 +116,10 @@ function drawIcon(size, maskable) {
     bmp.fillGradient(function (x, y) { return insideRoundRect(x, y, n, n, 7 * unit); }, GRAD_A, GRAD_B);
   }
 
-  // Telo jabolka
+  // Telo hruške: vrat + širši spodnji del
   bmp.fill(function (px, py) {
-    return insideCircle(px, py, X(BODY_CIRCLE.cx), Y(BODY_CIRCLE.cy), BODY_CIRCLE.r * S);
+    return insideCircle(px, py, X(NECK_CIRCLE.cx), Y(NECK_CIRCLE.cy), NECK_CIRCLE.r * S)
+        || insideCircle(px, py, X(BODY_CIRCLE.cx), Y(BODY_CIRCLE.cy), BODY_CIRCLE.r * S);
   }, BODY);
 
   // Pecelj
