@@ -1,7 +1,7 @@
 /* Predpomnilnik lupine aplikacije, da deluje tudi brez povezave.
    Slike obrokov so v IndexedDB in delujejo brez neta neodvisno od tega predpomnilnika.
    Ob spremembi datotek povečaj VERSION. */
-var VERSION = 'zdrav-v3';
+var VERSION = 'zdrav-v4';
 var SHELL = [
   './', './index.html', './style.css', './icon.svg', './manifest.json',
   './js/db.js', './js/app.js',

@@ -107,6 +107,16 @@ function buildMealCard(meal) {
     body.appendChild(ing);
   }
 
+  const actions = document.createElement("div");
+  actions.className = "meal-actions";
+
+  const edit = document.createElement("button");
+  edit.className = "meal-edit";
+  edit.type = "button";
+  edit.textContent = "✏️ Uredi";
+  edit.addEventListener("click", () => openMealModal(meal));
+  actions.appendChild(edit);
+
   const del = document.createElement("button");
   del.className = "meal-del";
   del.type = "button";
@@ -115,14 +125,17 @@ function buildMealCard(meal) {
     if (!confirm(`Izbrišem "${meal.name}"?`)) return;
     DB.remove(meal.id).then(renderGrid);
   });
-  body.appendChild(del);
+  actions.appendChild(del);
+
+  body.appendChild(actions);
 
   card.appendChild(body);
   return card;
 }
 
-// ---------------------------------------------------------- dodaj obrok
+// ---------------------------------------------------------- dodaj/uredi obrok
 const addOverlay = document.getElementById("addOverlay");
+const addModalTitle = document.getElementById("addModalTitle");
 const addCategorySelect = document.getElementById("addCategory");
 const addNameInput = document.getElementById("addName");
 const addIngredientsInput = document.getElementById("addIngredients");
@@ -132,8 +145,15 @@ const addCancelBtn = document.getElementById("addCancel");
 const addConfirmBtn = document.getElementById("addConfirm");
 
 let pendingImageBlob = null;
+let editingId = null;
+let editingCreated = null;
+let addPreviewUrl = null;
 
-function openAddModal() {
+// Brez argumenta = dodajanje novega obroka; z obrokom = urejanje obstoječega.
+function openMealModal(meal) {
+  editingId = meal ? meal.id : null;
+  editingCreated = meal ? meal.created : null;
+
   addCategorySelect.innerHTML = "";
   CATEGORIES.forEach((cat) => {
     const opt = document.createElement("option");
@@ -141,19 +161,32 @@ function openAddModal() {
     opt.textContent = cat.emoji + " " + cat.name;
     addCategorySelect.appendChild(opt);
   });
-  addCategorySelect.value = activeCategory;
-  addNameInput.value = "";
-  addIngredientsInput.value = "";
+
+  addModalTitle.textContent = meal ? "Uredi obrok" : "Nov obrok";
+  addConfirmBtn.textContent = meal ? "Shrani spremembe" : "Shrani obrok";
+  addCategorySelect.value = meal ? meal.category : activeCategory;
+  addNameInput.value = meal ? meal.name : "";
+  addIngredientsInput.value = meal ? meal.ingredients : "";
   addImageFile.value = "";
-  addPreview.hidden = true;
-  addPreview.src = "";
-  pendingImageBlob = null;
+  pendingImageBlob = meal ? meal.image : null;
+
+  if (addPreviewUrl) { URL.revokeObjectURL(addPreviewUrl); addPreviewUrl = null; }
+  if (pendingImageBlob) {
+    addPreviewUrl = URL.createObjectURL(pendingImageBlob);
+    addPreview.src = addPreviewUrl;
+    addPreview.hidden = false;
+  } else {
+    addPreview.hidden = true;
+    addPreview.src = "";
+  }
+
   addOverlay.hidden = false;
   addNameInput.focus();
 }
 
 function closeAddModal() {
   addOverlay.hidden = true;
+  if (addPreviewUrl) { URL.revokeObjectURL(addPreviewUrl); addPreviewUrl = null; }
 }
 
 function downscaleImage(file) {
@@ -177,7 +210,7 @@ function downscaleImage(file) {
   });
 }
 
-addMealBtn.addEventListener("click", openAddModal);
+addMealBtn.addEventListener("click", () => openMealModal());
 addCancelBtn.addEventListener("click", closeAddModal);
 
 addImageFile.addEventListener("change", () => {
@@ -185,7 +218,9 @@ addImageFile.addEventListener("change", () => {
   if (!file) return;
   downscaleImage(file).then((blob) => {
     pendingImageBlob = blob;
-    addPreview.src = URL.createObjectURL(blob);
+    if (addPreviewUrl) URL.revokeObjectURL(addPreviewUrl);
+    addPreviewUrl = URL.createObjectURL(blob);
+    addPreview.src = addPreviewUrl;
     addPreview.hidden = false;
   });
 });
@@ -194,16 +229,18 @@ addConfirmBtn.addEventListener("click", () => {
   const name = addNameInput.value.trim();
   if (!name) { addNameInput.focus(); return; }
 
-  DB.add({
-    id: uid(),
+  const record = {
+    id: editingId || uid(),
     category: addCategorySelect.value,
     name: name,
     ingredients: addIngredientsInput.value.trim(),
     image: pendingImageBlob,
-    created: Date.now()
-  }).then(() => {
+    created: editingId ? editingCreated : Date.now()
+  };
+
+  (editingId ? DB.update(record) : DB.add(record)).then(() => {
     closeAddModal();
-    if (addCategorySelect.value === activeCategory) renderGrid();
+    renderGrid();
   });
 });
 

@@ -52,6 +52,16 @@
     });
   }
 
+  function update(record) {
+    return tx("readwrite").then(function (store) {
+      return new Promise(function (resolve, reject) {
+        var req = store.put(record);
+        req.onsuccess = function () { resolve(); };
+        req.onerror = function () { reject(req.error); };
+      });
+    });
+  }
+
   function remove(id) {
     return tx("readwrite").then(function (store) {
       return new Promise(function (resolve, reject) {
@@ -62,5 +72,5 @@
     });
   }
 
-  window.DB = { add: add, getAll: getAll, remove: remove };
+  window.DB = { add: add, update: update, getAll: getAll, remove: remove };
 })();

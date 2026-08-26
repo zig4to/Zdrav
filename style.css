@@ -212,8 +212,14 @@ button, input, textarea, select {
   flex: 1;
 }
 
-.meal-del {
-  align-self: flex-end;
+.meal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 4px;
+  margin-top: auto;
+}
+
+.meal-edit, .meal-del {
   background: transparent;
   border: none;
   color: var(--text-soft);
@@ -222,6 +228,7 @@ button, input, textarea, select {
   padding: 4px 6px;
   border-radius: 6px;
 }
+.meal-edit:hover { color: var(--accent); background: var(--card-2); }
 .meal-del:hover { color: var(--danger); background: var(--card-2); }
 
 /* ---------- Modali ---------- */
