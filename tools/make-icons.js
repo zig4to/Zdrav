@@ -1,6 +1,6 @@
 /* Izriše ikone PNG iz iste risbe kot icon.svg — brez zunanjih odvisnosti.
    Zagon: node tools/make-icons.js
-   List = presek dveh krogov (vesica) — glej icon.svg za enak izračun. */
+   Jabolko = krog + pecelj (kapsula) + listič (mnogokotnik), glej icon.svg za isto risbo. */
 var zlib = require('zlib'), fs = require('fs'), path = require('path');
 
 var OUT = path.join(__dirname, '..', 'icons');
@@ -8,12 +8,13 @@ var SS = 4;
 
 var GRAD_A = [0x22, 0xc5, 0x5e];
 var GRAD_B = [0x16, 0xa3, 0x4a];
-var LEAF = [0xff, 0xff, 0xff];
-var VEIN = [0x16, 0xa3, 0x4a];
+var BODY = [0xff, 0xff, 0xff];
+var ACCENT = [0x16, 0xa3, 0x4a];
 
-// Presek dveh krogov r=11.25, centra na (5.25,12) in (18.75,12) -> konici na (12,3) in (12,21).
-var LEAF_A = { cx: 5.25, cy: 12, r: 11.25 };
-var LEAF_B = { cx: 18.75, cy: 12, r: 11.25 };
+var BODY_CIRCLE = { cx: 12, cy: 14, r: 7.2 };
+var STEM = { x1: 12, y1: 6.8, x2: 12, y2: 3.6, halfW: 0.75 };
+// Približek zaobljenega lista (glej ukrivljeno pot v icon.svg).
+var LEAF_POLY = [12, 4.9, 13, 3.8, 14.5, 3.3, 16, 3.7, 15.3, 4.8, 13.7, 5.3];
 var ART = { cx: 12, cy: 12 };
 
 function insideRoundRect(x, y, w, h, r) {
@@ -36,6 +37,15 @@ function insideCapsule(x, y, x1, y1, x2, y2, halfW) {
   t = Math.min(1, Math.max(0, t));
   var dx = x - (x1 + t * vx), dy = y - (y1 + t * vy);
   return dx * dx + dy * dy <= halfW * halfW;
+}
+
+function insidePolygon(x, y, pts) {
+  var hit = false;
+  for (var i = 0, j = pts.length - 2; i < pts.length; j = i, i += 2) {
+    var xi = pts[i], yi = pts[i + 1], xj = pts[j], yj = pts[j + 1];
+    if ((yi > y) !== (yj > y) && x < (xj - xi) * (y - yi) / (yj - yi) + xi) hit = !hit;
+  }
+  return hit;
 }
 
 function lerp(a, b, t) { return Math.round(a + (b - a) * t); }
@@ -105,16 +115,20 @@ function drawIcon(size, maskable) {
     bmp.fillGradient(function (x, y) { return insideRoundRect(x, y, n, n, 7 * unit); }, GRAD_A, GRAD_B);
   }
 
-  // List: presek dveh krogov v risalnih (24-enotnih) koordinatah, preslikanih v pikslih prek X()/Y().
+  // Telo jabolka
   bmp.fill(function (px, py) {
-    return insideCircle(px, py, X(LEAF_A.cx), Y(LEAF_A.cy), LEAF_A.r * S)
-        && insideCircle(px, py, X(LEAF_B.cx), Y(LEAF_B.cy), LEAF_B.r * S);
-  }, LEAF);
+    return insideCircle(px, py, X(BODY_CIRCLE.cx), Y(BODY_CIRCLE.cy), BODY_CIRCLE.r * S);
+  }, BODY);
 
-  // Žilica po sredini lista
+  // Pecelj
   bmp.fill(function (px, py) {
-    return insideCapsule(px, py, X(12), Y(5.5), X(12), Y(18.5), 0.5 * S);
-  }, VEIN);
+    return insideCapsule(px, py, X(STEM.x1), Y(STEM.y1), X(STEM.x2), Y(STEM.y2), STEM.halfW * S);
+  }, ACCENT);
+
+  // Listič
+  var leafPts = [];
+  for (var i = 0; i < LEAF_POLY.length; i += 2) leafPts.push(X(LEAF_POLY[i]), Y(LEAF_POLY[i + 1]));
+  bmp.fill(function (px, py) { return insidePolygon(px, py, leafPts); }, ACCENT);
 
   return downsample(bmp, size);
 }
