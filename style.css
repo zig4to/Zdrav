@@ -40,6 +40,32 @@ button, input, textarea, select {
   color: inherit;
 }
 
+/* ---------- Trd reset ---------- */
+.hard-reset-btn {
+  position: fixed;
+  top: 14px;
+  right: 14px;
+  z-index: 40;
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  color: var(--text-soft);
+  cursor: pointer;
+}
+.hard-reset-btn svg { width: 17px; height: 17px; }
+.hard-reset-btn:hover { color: var(--accent); border-color: color-mix(in srgb, var(--accent) 45%, var(--line)); }
+.hard-reset-btn:disabled { opacity: .6; cursor: default; }
+.hard-reset-btn.is-spinning svg { animation: hard-reset-spin .7s linear infinite; }
+
+@keyframes hard-reset-spin {
+  to { transform: rotate(360deg); }
+}
+
 /* ---------- Glava ---------- */
 .hero {
   display: flex;
