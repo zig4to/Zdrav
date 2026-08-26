@@ -77,6 +77,9 @@ function buildMealCard(meal) {
   const card = document.createElement("div");
   card.className = "meal-card";
 
+  const thumbWrap = document.createElement("div");
+  thumbWrap.className = "meal-thumb-wrap";
+
   if (meal.image) {
     const url = URL.createObjectURL(meal.image);
     objectUrls.push(url);
@@ -84,13 +87,24 @@ function buildMealCard(meal) {
     img.className = "meal-thumb";
     img.src = url;
     img.alt = meal.name;
-    card.appendChild(img);
+    thumbWrap.appendChild(img);
   } else {
     const ph = document.createElement("div");
     ph.className = "meal-thumb-placeholder";
     ph.textContent = "🍽️";
-    card.appendChild(ph);
+    thumbWrap.appendChild(ph);
   }
+
+  const editIcon = document.createElement("button");
+  editIcon.className = "meal-edit-icon";
+  editIcon.type = "button";
+  editIcon.title = "Uredi obrok";
+  editIcon.setAttribute("aria-label", "Uredi obrok");
+  editIcon.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>`;
+  editIcon.addEventListener("click", () => openMealModal(meal));
+  thumbWrap.appendChild(editIcon);
+
+  card.appendChild(thumbWrap);
 
   const body = document.createElement("div");
   body.className = "meal-body";
@@ -107,28 +121,6 @@ function buildMealCard(meal) {
     body.appendChild(ing);
   }
 
-  const actions = document.createElement("div");
-  actions.className = "meal-actions";
-
-  const edit = document.createElement("button");
-  edit.className = "meal-edit";
-  edit.type = "button";
-  edit.textContent = "✏️ Uredi";
-  edit.addEventListener("click", () => openMealModal(meal));
-  actions.appendChild(edit);
-
-  const del = document.createElement("button");
-  del.className = "meal-del";
-  del.type = "button";
-  del.textContent = "🗑 Izbriši";
-  del.addEventListener("click", () => {
-    if (!confirm(`Izbrišem "${meal.name}"?`)) return;
-    DB.remove(meal.id).then(renderGrid);
-  });
-  actions.appendChild(del);
-
-  body.appendChild(actions);
-
   card.appendChild(body);
   return card;
 }
@@ -143,6 +135,7 @@ const addImageFile = document.getElementById("addImageFile");
 const addPreview = document.getElementById("addPreview");
 const addCancelBtn = document.getElementById("addCancel");
 const addConfirmBtn = document.getElementById("addConfirm");
+const addDeleteBtn = document.getElementById("addDelete");
 
 let pendingImageBlob = null;
 let editingId = null;
@@ -164,6 +157,7 @@ function openMealModal(meal) {
 
   addModalTitle.textContent = meal ? "Uredi obrok" : "Nov obrok";
   addConfirmBtn.textContent = meal ? "Shrani spremembe" : "Shrani obrok";
+  addDeleteBtn.hidden = !meal;
   addCategorySelect.value = meal ? meal.category : activeCategory;
   addNameInput.value = meal ? meal.name : "";
   addIngredientsInput.value = meal ? meal.ingredients : "";
@@ -239,6 +233,15 @@ addConfirmBtn.addEventListener("click", () => {
   };
 
   (editingId ? DB.update(record) : DB.add(record)).then(() => {
+    closeAddModal();
+    renderGrid();
+  });
+});
+
+addDeleteBtn.addEventListener("click", () => {
+  if (!editingId) return;
+  if (!confirm(`Izbrišem "${addNameInput.value.trim()}"?`)) return;
+  DB.remove(editingId).then(() => {
     closeAddModal();
     renderGrid();
   });

@@ -207,6 +207,8 @@ button, input, textarea, select {
   flex-direction: column;
 }
 
+.meal-thumb-wrap { position: relative; }
+
 .meal-thumb {
   width: 100%;
   aspect-ratio: 4 / 3;
@@ -226,6 +228,25 @@ button, input, textarea, select {
   font-size: 34px;
 }
 
+.meal-edit-icon {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(13, 20, 16, 0.55);
+  backdrop-filter: blur(2px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 50%;
+  color: #fff;
+  cursor: pointer;
+}
+.meal-edit-icon svg { width: 14px; height: 14px; }
+.meal-edit-icon:hover { background: var(--accent); border-color: transparent; color: #06210f; }
+
 .meal-body { padding: 10px 12px 12px; display: flex; flex-direction: column; gap: 6px; flex: 1; }
 .meal-name { font-weight: 700; font-size: 14.5px; }
 .meal-ingredients {
@@ -237,25 +258,6 @@ button, input, textarea, select {
   -webkit-box-orient: vertical;
   flex: 1;
 }
-
-.meal-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 4px;
-  margin-top: auto;
-}
-
-.meal-edit, .meal-del {
-  background: transparent;
-  border: none;
-  color: var(--text-soft);
-  cursor: pointer;
-  font-size: 13px;
-  padding: 4px 6px;
-  border-radius: 6px;
-}
-.meal-edit:hover { color: var(--accent); background: var(--card-2); }
-.meal-del:hover { color: var(--danger); background: var(--card-2); }
 
 /* ---------- Modali ---------- */
 .modal-overlay {
@@ -353,6 +355,22 @@ button, input, textarea, select {
   color: #06210f;
 }
 .tool-btn:disabled { opacity: .5; cursor: not-allowed; }
+
+.danger-full {
+  display: block;
+  width: 100%;
+  margin-top: 10px;
+  padding-top: 14px;
+  border: none;
+  border-top: 1px solid var(--line);
+  background: transparent;
+  color: var(--danger);
+  font-weight: 600;
+  text-align: center;
+  cursor: pointer;
+}
+.danger-full:hover { color: #fff; }
+.danger-full[hidden] { display: none; }
 
 /* ---------- Izbira kategorije v modalu naključnega izbora ---------- */
 .cat-pick-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
