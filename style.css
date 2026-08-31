@@ -3,6 +3,7 @@
    ================================================================ */
 
 :root {
+  /* Temna tema (privzeto) */
   --bg:            #0d1410;
   --bg-tint:       #101a14;
   --card:          #16211a;
@@ -19,6 +20,24 @@
   --shadow-lg:     0 16px 40px -12px rgba(0,0,0,.65), 0 2px 8px rgba(0,0,0,.35);
   --radius:        16px;
   --radius-sm:     11px;
+}
+
+:root[data-theme="light"] {
+  /* Svetla tema — ista zelena družina */
+  --bg:            #f3f7f3;
+  --bg-tint:       #e6f2ea;
+  --card:          #ffffff;
+  --card-2:        #eef4ef;
+  --text:          #14231a;
+  --text-soft:     #5c7466;
+  --line:          #d3e2d8;
+  --line-soft:     #e4ede7;
+  --accent:        #16a34a;
+  --accent-2:      #15803d;
+  --danger:        #dc2626;
+  --shadow-sm:     0 1px 2px rgba(20,35,26,.08);
+  --shadow:        0 1px 2px rgba(20,35,26,.06), 0 10px 24px -10px rgba(20,35,26,.16);
+  --shadow-lg:     0 16px 40px -12px rgba(20,35,26,.2), 0 2px 8px rgba(20,35,26,.1);
 }
 
 * { box-sizing: border-box; }
@@ -39,6 +58,31 @@ button, input, textarea, select {
   font: inherit;
   color: inherit;
 }
+
+/* ---------- Gumb za preklop teme ---------- */
+.theme-toggle {
+  position: fixed;
+  top: 14px;
+  right: 56px;
+  z-index: 40;
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  color: var(--text-soft);
+  cursor: pointer;
+}
+.theme-toggle svg { width: 17px; height: 17px; }
+.theme-toggle:hover { color: var(--accent); border-color: color-mix(in srgb, var(--accent) 45%, var(--line)); }
+
+/* V temni temi ponudi sonce (klik -> svetlo), v svetli luno (klik -> temno). */
+.theme-toggle .icon-moon { display: none; }
+:root[data-theme="light"] .theme-toggle .icon-sun { display: none; }
+:root[data-theme="light"] .theme-toggle .icon-moon { display: block; }
 
 /* ---------- Trd reset ---------- */
 .hard-reset-btn {
@@ -425,3 +469,133 @@ button, input, textarea, select {
   .hero { flex-direction: column; align-items: flex-start; }
   .random-btn { align-self: stretch; justify-content: center; }
 }
+
+/* ---------- Prijavni zaslon ---------- */
+.auth-screen {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+.auth-screen[hidden] { display: none; }
+
+.auth-card {
+  width: 100%;
+  max-width: 360px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  padding: 28px 24px 22px;
+  text-align: center;
+}
+
+.auth-icon {
+  width: 54px;
+  height: 54px;
+  margin: 0 auto 12px;
+}
+.auth-icon svg { width: 27px; height: 27px; }
+
+.auth-brand {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.auth-sub { margin: 2px 0 18px; color: var(--text-soft); font-size: 14px; }
+
+.auth-card form { text-align: left; }
+.auth-card .field-label:first-child { margin-top: 0; }
+
+.auth-submit {
+  width: 100%;
+  margin-top: 18px;
+  justify-content: center;
+}
+
+.auth-forgot {
+  display: block;
+  margin: 8px 0 0 auto;
+  padding: 2px 0;
+  background: transparent;
+  border: none;
+  color: var(--text-soft);
+  font-size: 12.5px;
+  cursor: pointer;
+  text-decoration: underline;
+}
+.auth-forgot:hover { color: var(--accent); }
+.auth-forgot[hidden] { display: none; }
+
+.auth-error {
+  margin: 12px 0 0;
+  color: var(--danger);
+  font-size: 13px;
+  min-height: 0;
+}
+.auth-error:empty { display: none; }
+
+.auth-note {
+  margin: 12px 0 0;
+  color: var(--accent);
+  font-size: 13px;
+}
+.auth-note:empty { display: none; }
+
+.auth-toggle {
+  margin-top: 16px;
+  background: transparent;
+  border: none;
+  color: var(--text-soft);
+  font-size: 13.5px;
+  cursor: pointer;
+  text-decoration: underline;
+}
+.auth-toggle:hover { color: var(--text); }
+
+/* ---------- Vrstica z uporabnikom ---------- */
+#appRoot[hidden] { display: none; }
+
+.user-bar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 10px 56px 0 20px;
+}
+
+.user-email {
+  color: var(--text-soft);
+  font-size: 12.5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.signout-btn {
+  flex: none;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text-soft);
+  cursor: pointer;
+}
+.signout-btn:hover { color: var(--accent); border-color: color-mix(in srgb, var(--accent) 45%, var(--line)); }
+.signout-btn:disabled { opacity: .6; cursor: default; }
+
+/* ---------- Popravki za svetlo temo ---------- */
+:root[data-theme="light"] .brand-text h1 {
+  background: linear-gradient(90deg, #14231a, #15803d);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+:root[data-theme="light"] .modal-overlay { background: rgba(20, 35, 26, .34); }
+:root[data-theme="light"] .meal-thumb-placeholder,
+:root[data-theme="light"] .result-placeholder { color: #c2d6c8; }

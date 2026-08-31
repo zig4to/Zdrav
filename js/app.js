@@ -29,7 +29,10 @@ function revokeObjectUrls() {
 }
 
 function uid() {
-  return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+  if (crypto.randomUUID) return crypto.randomUUID();
+  return "10000000-1000-4000-8000-100000000000".replace(/[018]/g, (c) =>
+    (c ^ (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (c / 4)))).toString(16)
+  );
 }
 
 // ---------------------------------------------------------------- zavihki
@@ -140,12 +143,16 @@ const addDeleteBtn = document.getElementById("addDelete");
 let pendingImageBlob = null;
 let editingId = null;
 let editingCreated = null;
+let editingImagePath = null;
+let imageChanged = false;
 let addPreviewUrl = null;
 
 // Brez argumenta = dodajanje novega obroka; z obrokom = urejanje obstoječega.
 function openMealModal(meal) {
   editingId = meal ? meal.id : null;
   editingCreated = meal ? meal.created : null;
+  editingImagePath = meal ? (meal.imagePath || null) : null;
+  imageChanged = false;
 
   addCategorySelect.innerHTML = "";
   CATEGORIES.forEach((cat) => {
@@ -212,6 +219,7 @@ addImageFile.addEventListener("change", () => {
   if (!file) return;
   downscaleImage(file).then((blob) => {
     pendingImageBlob = blob;
+    imageChanged = true;
     if (addPreviewUrl) URL.revokeObjectURL(addPreviewUrl);
     addPreviewUrl = URL.createObjectURL(blob);
     addPreview.src = addPreviewUrl;
@@ -228,22 +236,39 @@ addConfirmBtn.addEventListener("click", () => {
     category: addCategorySelect.value,
     name: name,
     ingredients: addIngredientsInput.value.trim(),
-    image: pendingImageBlob,
     created: editingId ? editingCreated : Date.now()
   };
+  if (editingId) {
+    record.imagePath = editingImagePath;
+    record.image = imageChanged ? pendingImageBlob : undefined; // undefined = pusti obstojeco
+  } else {
+    record.image = pendingImageBlob;
+  }
 
+  addConfirmBtn.disabled = true;
   (editingId ? DB.update(record) : DB.add(record)).then(() => {
+    addConfirmBtn.disabled = false;
     closeAddModal();
     renderGrid();
+  }).catch((err) => {
+    addConfirmBtn.disabled = false;
+    console.error(err);
+    alert("Shranjevanje ni uspelo. Za dodajanje in urejanje potrebujes internetno povezavo.");
   });
 });
 
 addDeleteBtn.addEventListener("click", () => {
   if (!editingId) return;
   if (!confirm(`Izbrišem "${addNameInput.value.trim()}"?`)) return;
-  DB.remove(editingId).then(() => {
+  addDeleteBtn.disabled = true;
+  DB.remove(editingId, editingImagePath).then(() => {
+    addDeleteBtn.disabled = false;
     closeAddModal();
     renderGrid();
+  }).catch((err) => {
+    addDeleteBtn.disabled = false;
+    console.error(err);
+    alert("Brisanje ni uspelo. Potrebujes internetno povezavo.");
   });
 });
 
@@ -368,8 +393,12 @@ hardResetBtn.addEventListener("click", () => {
 });
 
 // --------------------------------------------------------------------- zagon
-renderTabs();
-renderPanel();
+// Aplikacijo zazene js/auth.js sele po uspesni prijavi.
+window.startApp = function () {
+  renderTabs();
+  renderPanel();
+};
+window.refreshApp = window.startApp;
 
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
