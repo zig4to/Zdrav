@@ -68,7 +68,7 @@ Storage bucket `jedi-slike` v mapo `<user_id>/<jed_id>.jpg`.
 PWA. Na **Androidu (Chrome)**: meni ⋮ → *Namesti aplikacijo*. Na **iPhonu (Safari)**:
 Deli → *Dodaj na začetni zaslon*. Pogoj je HTTPS — deluje na GitHub Pages.
 
-> Po vsaki spremembi datotek povečaj `VERSION` v `sw.js` (trenutno `zdrav-v11`), sicer
+> Po vsaki spremembi datotek povečaj `VERSION` v `sw.js` (trenutno `zdrav-v12`), sicer
 > nameščene naprave še nekaj časa vidijo staro različico iz predpomnilnika.
 
 ## Objava na GitHub Pages

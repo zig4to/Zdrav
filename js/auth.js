@@ -94,7 +94,11 @@
     submitBtn.disabled = true;
 
     var op = mode === "signup"
-      ? sb.auth.signUp({ email: email, password: pass })
+      ? sb.auth.signUp({
+          email: email,
+          password: pass,
+          options: { emailRedirectTo: location.origin + location.pathname }
+        })
       : sb.auth.signInWithPassword({ email: email, password: pass });
 
     op.then(function (res) {
