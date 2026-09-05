@@ -426,7 +426,9 @@ if (btnUser && userMenu) {
 if (installAppBtn) {
   installAppBtn.addEventListener("click", () => {
     closeUserMenu();
-    if (window.InstallPromo && window.InstallPromo._open) window.InstallPromo._open();
+    const ip = window.InstallPromo;
+    if (ip && ip.requestInstall) ip.requestInstall();
+    else if (ip && ip._open) ip._open();
   });
 }
 

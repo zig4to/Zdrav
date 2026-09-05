@@ -21,7 +21,8 @@
 
   var deferred = null;
   var modal = null;
-  var iosVariant = false;
+  var manualVariant = false;   // okno prikazuje ročna navodila (ni na voljo deferred)
+  var explicitOpen = false;    // okno odprto na izrecno zahtevo (gumb v meniju), ne samodejno
   var pending = false;
 
   function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
@@ -106,13 +107,24 @@
     return ov;
   }
 
-  function openModal() {
+  // Ročna navodila, ko brskalnik ne ponudi samodejnega okna za namestitev.
+  function manualHint() {
+    var ua = navigator.userAgent;
+    if (isIOS()) return "V Safariju: Deli → Dodaj na začetni zaslon.";
+    if (/Android/i.test(ua)) return "V Chromu: meni ⋮ → »Namesti aplikacijo«.";
+    if (/Firefox\//i.test(ua)) return "Firefox namestitve teh aplikacij ne podpira — odpri stran v Chromu ali Edge.";
+    return "V Chromu ali Edge: ikona za namestitev v naslovni vrstici ali meni ⋮ → »Namesti aplikacijo«.";
+  }
+
+  function openModal(opts) {
+    opts = opts || {};
+    explicitOpen = !!opts.explicit;
     var ov = buildModal();
-    iosVariant = !deferred && isIOS();
+    manualVariant = !deferred;
     var label = ov.querySelector(".ip-label");
     var cancel = ov.querySelector(".ip-cancel");
-    if (iosVariant) {
-      ov.querySelector(".ip-text").textContent = "V Safariju: Deli → Dodaj na začetni zaslon.";
+    if (manualVariant) {
+      ov.querySelector(".ip-text").textContent = manualHint();
       label.textContent = "Razumem";
       cancel.hidden = true;
     } else {
@@ -127,19 +139,44 @@
   function closeModal() {
     if (!modal) return;
     modal.hidden = true;
-    lsSet(LS_DONE, "1");
-    if (iosVariant) lsSet(LS_IOS_OFF, "1");
+    // Zastavice utišanja veljajo samo za samodejno ponudbo, ne za izrecni klik.
+    if (!explicitOpen) {
+      lsSet(LS_DONE, "1");
+      if (manualVariant && isIOS()) lsSet(LS_IOS_OFF, "1");
+    }
+    explicitOpen = false;
   }
 
-  function onPrimary() {
-    closeModal();
-    if (!deferred) return;
-    deferred.prompt();
+  function firePrompt() {
+    if (!deferred) return false;
+    try {
+      deferred.prompt();
+    } catch (e) {
+      return false;   // npr. brez uporabnikove geste — pokličemo ročna navodila
+    }
     if (deferred.userChoice && deferred.userChoice.finally) {
       deferred.userChoice.finally(function () { deferred = null; });
     } else {
       deferred = null;
     }
+    return true;
+  }
+
+  function onPrimary() {
+    var had = !!deferred;
+    closeModal();
+    if (had) firePrompt();
+  }
+
+  // Izrecna zahteva za namestitev (gumb v meniju): če je na voljo sistemsko
+  // okno, ga sproži takoj; sicer (ali ob neuspehu) pokaže ročna navodila.
+  function requestInstall() {
+    if (probablyInstalled()) return;
+    if (deferred && firePrompt()) {
+      if (modal) modal.hidden = true;
+      return;
+    }
+    openModal({ explicit: true });
   }
 
   function triggerOpen() {
@@ -162,5 +199,9 @@
     triggerOpen();
   }
 
-  window.InstallPromo = { afterLogin: afterLogin, _open: openModal };
+  window.InstallPromo = {
+    afterLogin: afterLogin,
+    requestInstall: requestInstall,
+    _open: openModal,
+  };
 })();
