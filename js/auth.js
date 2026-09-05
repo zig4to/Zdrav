@@ -235,6 +235,10 @@
 
   sb.auth.onAuthStateChange(function (event, session) {
     if (event === "PASSWORD_RECOVERY") { showRecovery(); return; }
+    // INITIAL_SESSION obravnava ze getSession() klic zgoraj; ce bi ga tu se
+    // enkrat, bi se zacetni izris zgodil dvakrat (npr. podvojeno sporocilo
+    // "Ni se obrokov v tej kategoriji").
+    if (event === "INITIAL_SESSION") return;
     if (recovering) return;
     if (session) showApp(session);
     else showAuth();

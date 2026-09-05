@@ -58,10 +58,19 @@ function renderPanel() {
 }
 
 // ------------------------------------------------------------------ mreža
+let gridRenderToken = 0;
+
 function renderGrid() {
   revokeObjectUrls();
   mealsGridEl.innerHTML = "";
+  // Ce se renderGrid sprozi veckrat hkrati (npr. zacetni izris + osvezitev
+  // seje), naj rezultat izrise samo zadnji klic — sicer se karte in
+  // sporocilo "Ni se obrokov" podvojijo.
+  const token = ++gridRenderToken;
   DB.getAll(activeCategory).then((meals) => {
+    if (token !== gridRenderToken) return;
+    mealsGridEl.innerHTML = "";
+
     if (!meals.length) {
       const hint = document.createElement("p");
       hint.className = "empty-hint";
