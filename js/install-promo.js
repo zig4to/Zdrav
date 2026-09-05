@@ -38,8 +38,31 @@
     if (/iPhone|iPad|iPod/i.test(ua)) return true;
     return /Macintosh/.test(ua) && navigator.maxTouchPoints > 1;
   }
+  function isAndroid() {
+    return /Android/i.test(navigator.userAgent);
+  }
   function probablyInstalled() {
     return isStandalone() || lsGet(LS_INSTALLED) === "1";
+  }
+
+  // Brave (Android) pogosto ne ponudi namestitve PWA; javi se prek te zastavice,
+  // da lahko besedilo v oknu prilagodimo.
+  var isBrave = false;
+  try {
+    if (navigator.brave && navigator.brave.isBrave) {
+      navigator.brave.isBrave().then(function (v) { isBrave = !!v; }).catch(function () {});
+    }
+  } catch (e) { /* ni pomembno */ }
+
+  // Android intent, ki trenutno stran odpre v aplikaciji Google Chrome.
+  // Spletna stran ne more sama namestiti PWA v drug brskalnik — lahko pa
+  // uporabnika pripelje v Chrome, kjer namestitev deluje.
+  function chromeIntentUrl() {
+    var rest = location.href.replace(/^https?:\/\//i, "");
+    var fallback = "https://play.google.com/store/apps/details?id=com.android.chrome";
+    return "intent://" + rest +
+      "#Intent;scheme=https;package=com.android.chrome;" +
+      "S.browser_fallback_url=" + encodeURIComponent(fallback) + ";end";
   }
 
   window.addEventListener("beforeinstallprompt", function (e) {
@@ -77,8 +100,11 @@
       ".ip-box h2{margin:0;font-size:1.1rem;font-weight:600}" +
       ".ip-box p{margin:0;font-size:.9rem;line-height:1.5;color:rgba(244,245,247,.72)}" +
       ".ip-ico svg{width:32px;height:32px;display:block}" +
-      ".ip-primary{margin-top:4px;display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border:0;border-radius:999px;background:linear-gradient(135deg,#6366f1,#a855f7);color:#fff;font:inherit;font-size:.9rem;font-weight:600;cursor:pointer}" +
+      ".ip-primary{margin-top:4px;display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border:0;border-radius:999px;background:linear-gradient(135deg,#6366f1,#a855f7);color:#fff;font:inherit;font-size:.9rem;font-weight:600;cursor:pointer;text-decoration:none}" +
       ".ip-primary svg{width:17px;height:17px}" +
+      ".ip-primary[hidden]{display:none}" +
+      ".ip-link{margin-top:4px;display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border:0;border-radius:999px;background:linear-gradient(135deg,#6366f1,#a855f7);color:#fff;font:inherit;font-size:.9rem;font-weight:600;cursor:pointer;text-decoration:none}" +
+      ".ip-link[hidden]{display:none}" +
       ".ip-cancel{padding:6px 10px;border:0;background:none;color:rgba(244,245,247,.6);font:inherit;font-size:.8rem;cursor:pointer}" +
       ".ip-cancel:hover{color:#f4f5f7}" +
       ".ip-cancel[hidden]{display:none}" +
@@ -93,6 +119,7 @@
         '<span class="ip-ico">' + ic + "</span>" +
         "<h2>Namesti aplikacijo</h2>" +
         '<p class="ip-text"></p>' +
+        '<a class="ip-link" hidden>Odpri v Chromu</a>' +
         '<button class="ip-primary" type="button">' + ic + '<span class="ip-label">Namesti</span></button>' +
         '<button class="ip-cancel" type="button">Prekliči</button>' +
       "</div>";
@@ -100,6 +127,7 @@
     ov.addEventListener("click", function (e) { if (e.target === ov) closeModal(); });
     ov.querySelector(".ip-cancel").addEventListener("click", closeModal);
     ov.querySelector(".ip-primary").addEventListener("click", onPrimary);
+    ov.querySelector(".ip-link").addEventListener("click", function () { setTimeout(closeModal, 500); });
     document.addEventListener("keydown", function (e) {
       if (e.key === "Escape" && modal && !modal.hidden) closeModal();
     });
@@ -123,17 +151,36 @@
     manualVariant = !deferred;
     var label = ov.querySelector(".ip-label");
     var cancel = ov.querySelector(".ip-cancel");
-    if (manualVariant) {
-      ov.querySelector(".ip-text").textContent = manualHint();
-      label.textContent = "Razumem";
-      cancel.hidden = true;
-    } else {
+    var link = ov.querySelector(".ip-link");
+    var primary = ov.querySelector(".ip-primary");
+    link.hidden = true;
+
+    if (!manualVariant) {
+      // Sistemsko okno je na voljo — pravi gumb "Namesti".
       ov.querySelector(".ip-text").textContent = "Za najboljšo izkušnjo namesti aplikacijo na svojo napravo.";
       label.textContent = "Namesti";
+      primary.hidden = false;
       cancel.hidden = false;
+    } else if (isAndroid()) {
+      // Ta brskalnik (npr. Brave) ne ponudi namestitve — preusmeri v Chrome,
+      // kjer namestitev deluje.
+      ov.querySelector(".ip-text").textContent = isBrave
+        ? "Brave na tej napravi ne omogoča namestitve. Odpri aplikacijo v Chromu in jo namesti tam (meni ⋮ → »Namesti aplikacijo«)."
+        : "Ta brskalnik ne ponudi namestitve. Odpri aplikacijo v Chromu in jo namesti tam (meni ⋮ → »Namesti aplikacijo«).";
+      link.setAttribute("href", chromeIntentUrl());
+      link.hidden = false;
+      primary.hidden = true;
+      cancel.hidden = false;
+    } else {
+      // iOS / namizje — ročna navodila.
+      ov.querySelector(".ip-text").textContent = manualHint();
+      label.textContent = "Razumem";
+      primary.hidden = false;
+      cancel.hidden = true;
     }
+
     ov.hidden = false;
-    ov.querySelector(".ip-primary").focus();
+    (link.hidden ? primary : link).focus();
   }
 
   function closeModal() {
