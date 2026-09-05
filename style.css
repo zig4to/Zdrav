@@ -59,52 +59,114 @@ button, input, textarea, select {
   color: inherit;
 }
 
-/* ---------- Gumb za preklop teme ---------- */
-.theme-toggle {
-  position: fixed;
-  top: 14px;
-  right: 56px;
-  z-index: 40;
-  width: 34px;
-  height: 34px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--card);
-  border: 1px solid var(--line);
-  border-radius: 50%;
-  color: var(--text-soft);
-  cursor: pointer;
-}
-.theme-toggle svg { width: 17px; height: 17px; }
-.theme-toggle:hover { color: var(--accent); border-color: color-mix(in srgb, var(--accent) 45%, var(--line)); }
-
-/* V temni temi ponudi sonce (klik -> svetlo), v svetli luno (klik -> temno). */
-.theme-toggle .icon-moon { display: none; }
-:root[data-theme="light"] .theme-toggle .icon-sun { display: none; }
-:root[data-theme="light"] .theme-toggle .icon-moon { display: block; }
-
-/* ---------- Trd reset ---------- */
-.hard-reset-btn {
+/* ---------- Račun: ikona + spustni meni ---------- */
+.account {
   position: fixed;
   top: 14px;
   right: 14px;
-  z-index: 40;
-  width: 34px;
-  height: 34px;
+  z-index: 45;
+}
+
+.user-btn {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 36px;
+  height: 36px;
   background: var(--card);
   border: 1px solid var(--line);
   border-radius: 50%;
   color: var(--text-soft);
   cursor: pointer;
+  box-shadow: var(--shadow-sm);
 }
-.hard-reset-btn svg { width: 17px; height: 17px; }
-.hard-reset-btn:hover { color: var(--accent); border-color: color-mix(in srgb, var(--accent) 45%, var(--line)); }
-.hard-reset-btn:disabled { opacity: .6; cursor: default; }
-.hard-reset-btn.is-spinning svg { animation: hard-reset-spin .7s linear infinite; }
+.user-btn svg { width: 18px; height: 18px; }
+.user-btn:hover,
+.user-btn[aria-expanded="true"] {
+  color: var(--accent);
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--line));
+}
+
+.user-menu[hidden] { display: none !important; }
+.user-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 232px;
+  max-width: calc(100vw - 28px);
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-lg);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.user-menu-name {
+  margin: 2px 2px 0;
+  font-size: 14.5px;
+  font-weight: 700;
+  letter-spacing: -.01em;
+  overflow-wrap: anywhere;
+}
+.user-menu-email {
+  margin: 0 2px;
+  font-size: 12px;
+  color: var(--text-soft);
+  overflow-wrap: anywhere;
+}
+.user-menu-sep {
+  height: 1px;
+  background: var(--line);
+  margin: 10px 0 6px;
+}
+.user-menu-label {
+  margin: 0 2px 4px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: var(--text-soft);
+}
+
+.user-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 9px 10px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+.user-menu-item svg { width: 17px; height: 17px; flex: none; color: var(--text-soft); }
+.user-menu-item:hover {
+  background: var(--card-2);
+  border-color: color-mix(in srgb, var(--accent) 35%, var(--line));
+}
+.user-menu-item:hover svg { color: var(--accent); }
+.user-menu-item:disabled { opacity: .55; cursor: default; }
+.user-menu-item.danger { color: var(--danger); }
+.user-menu-item.danger svg { color: var(--danger); }
+.user-menu-item.danger:hover {
+  background: color-mix(in srgb, var(--danger) 12%, var(--card-2));
+  border-color: color-mix(in srgb, var(--danger) 40%, var(--line));
+}
+
+/* V temni temi ponudi sonce (klik -> svetlo), v svetli luno (klik -> temno). */
+#themeToggle .icon-moon { display: none; }
+:root[data-theme="light"] #themeToggle .icon-sun { display: none; }
+:root[data-theme="light"] #themeToggle .icon-moon { display: block; }
+
+#hardResetBtn.is-spinning svg { animation: hard-reset-spin .7s linear infinite; }
 
 @keyframes hard-reset-spin {
   to { transform: rotate(360deg); }
@@ -555,40 +617,10 @@ button, input, textarea, select {
 }
 .auth-toggle:hover { color: var(--text); }
 
-/* ---------- Vrstica z uporabnikom ---------- */
+/* ---------- Aplikacija po prijavi ---------- */
 #appRoot[hidden] { display: none; }
 
-.user-bar {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 12px;
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 10px 56px 0 20px;
-}
-
-.user-email {
-  color: var(--text-soft);
-  font-size: 12.5px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.signout-btn {
-  flex: none;
-  background: var(--card);
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  padding: 6px 14px;
-  font-size: 12.5px;
-  font-weight: 600;
-  color: var(--text-soft);
-  cursor: pointer;
-}
-.signout-btn:hover { color: var(--accent); border-color: color-mix(in srgb, var(--accent) 45%, var(--line)); }
-.signout-btn:disabled { opacity: .6; cursor: default; }
+.hero { padding-right: 64px; }
 
 /* ---------- Popravki za svetlo temo ---------- */
 :root[data-theme="light"] .brand-text h1 {

@@ -14,6 +14,8 @@
     try { localStorage.setItem(KEY, theme); } catch (e) {}
     var meta = document.querySelector('meta[name="theme-color"]');
     if (meta) meta.setAttribute("content", theme === "light" ? "#f4f8f4" : "#0d1410");
+    var label = document.getElementById("themeToggleLabel");
+    if (label) label.textContent = theme === "light" ? "Svetla tema" : "Temna tema";
   }
 
   // Poskrbi za pravilno barvo statusne vrstice ob zagonu.

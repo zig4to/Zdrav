@@ -25,7 +25,26 @@
   var recNote = document.getElementById("recoveryNote");
 
   var userEmailEl = document.getElementById("userEmail");
+  var userNameEl = document.getElementById("userMenuName");
   var signoutBtn = document.getElementById("signoutBtn");
+
+  // Ime in priimek uporabnika: iz user_metadata (ce je nastavljeno ob registraciji
+  // ali prek drugih aplikacij), sicer sestavljeno iz e-poste.
+  function displayName(user) {
+    var md = (user && user.user_metadata) || {};
+    var full = String(md.full_name || md.name || md.display_name || "").trim();
+    if (!full) {
+      var fn = String(md.first_name || md.given_name || "").trim();
+      var ln = String(md.last_name || md.family_name || "").trim();
+      full = (fn + " " + ln).trim();
+    }
+    if (!full && user && user.email) {
+      full = user.email.split("@")[0].split(/[._-]+/).filter(Boolean)
+        .map(function (w) { return w.charAt(0).toUpperCase() + w.slice(1); })
+        .join(" ");
+    }
+    return full || "Uporabnik";
+  }
 
   var mode = "signin"; // "signin" | "signup"
   var appStarted = false;
@@ -171,7 +190,9 @@
     authScreen.hidden = true;
     recoveryScreen.hidden = true;
     appRoot.hidden = false;
-    userEmailEl.textContent = (session && session.user && session.user.email) || "";
+    var user = session && session.user;
+    userEmailEl.textContent = (user && user.email) || "";
+    if (userNameEl) userNameEl.textContent = displayName(user);
     if (!appStarted && typeof window.startApp === "function") {
       appStarted = true;
       window.startApp();

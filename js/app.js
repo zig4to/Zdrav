@@ -392,6 +392,44 @@ hardResetBtn.addEventListener("click", () => {
     .then(reloadFresh);
 });
 
+// ------------------------------------------------------------ uporabniški meni
+const btnUser = document.getElementById("btnUser");
+const userMenu = document.getElementById("userMenu");
+const installAppBtn = document.getElementById("installAppBtn");
+
+function closeUserMenu() {
+  if (!userMenu) return;
+  userMenu.hidden = true;
+  if (btnUser) btnUser.setAttribute("aria-expanded", "false");
+}
+function openUserMenu() {
+  if (!userMenu) return;
+  userMenu.hidden = false;
+  if (btnUser) btnUser.setAttribute("aria-expanded", "true");
+}
+
+if (btnUser && userMenu) {
+  btnUser.addEventListener("click", (e) => {
+    e.stopPropagation();
+    userMenu.hidden ? openUserMenu() : closeUserMenu();
+  });
+  document.addEventListener("click", (e) => {
+    if (userMenu.hidden) return;
+    if (userMenu.contains(e.target) || btnUser.contains(e.target)) return;
+    closeUserMenu();
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeUserMenu();
+  });
+}
+
+if (installAppBtn) {
+  installAppBtn.addEventListener("click", () => {
+    closeUserMenu();
+    if (window.InstallPromo && window.InstallPromo._open) window.InstallPromo._open();
+  });
+}
+
 // --------------------------------------------------------------------- zagon
 // Aplikacijo zazene js/auth.js sele po uspesni prijavi.
 window.startApp = function () {
