@@ -178,6 +178,7 @@
     } else if (appStarted && typeof window.refreshApp === "function") {
       window.refreshApp();
     }
+    if (window.InstallPromo) window.InstallPromo.afterLogin();
   }
 
   function showAuth() {

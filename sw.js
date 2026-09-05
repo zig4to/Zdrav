@@ -3,10 +3,10 @@
    jedi iz IndexedDB predpomnilnika (glej js/db.js). Klici na Supabase (*.supabase.co)
    se NE predpomnijo — gredo naravnost na mrezo.
    Ob spremembi datotek povečaj VERSION. */
-var VERSION = 'zdrav-v12';
+var VERSION = 'zdrav-v13';
 var SHELL = [
   './', './index.html', './style.css', './icon.svg', './manifest.json',
-  './js/theme.js', './js/config.js', './js/db.js', './js/app.js', './js/auth.js',
+  './js/theme.js', './js/config.js', './js/db.js', './js/app.js', './js/install-promo.js', './js/auth.js',
   './icons/icon-192.png', './icons/icon-512.png',
   './icons/icon-maskable-192.png', './icons/icon-maskable-512.png',
   './icons/apple-touch-icon.png'
