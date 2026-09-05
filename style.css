@@ -530,6 +530,14 @@ button, input, textarea, select {
   .brand-text h1 { font-size: 26px; }
   .hero { flex-direction: column; align-items: flex-start; }
   .random-btn { align-self: stretch; justify-content: center; }
+
+  /* Kategorije: 2 zavihka v vrsti namesto vodoravnega drsenja. */
+  .tabs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    overflow-x: visible;
+  }
+  .tab { justify-content: center; }
 }
 
 /* ---------- Prijavni zaslon ---------- */

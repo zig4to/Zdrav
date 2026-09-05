@@ -1,10 +1,12 @@
 /* Zdrav — baza zdravih obrokov + naključni izbor, ko zmanjka idej. */
 
+// Vrstni red velja povsod (zavihki, izbirnik kategorije). Na mobilnem se
+// zavihki izrisejo 2 v vrsti: zajtrk + malica, nato kosilo + vecerja.
 const CATEGORIES = [
   { id: "zajtrk", name: "Zajtrk", emoji: "🌅" },
+  { id: "malica", name: "Malica", emoji: "🥕" },
   { id: "kosilo", name: "Kosilo", emoji: "🍲" },
-  { id: "vecerja", name: "Večerja", emoji: "🌙" },
-  { id: "malica", name: "Malica", emoji: "🥕" }
+  { id: "vecerja", name: "Večerja", emoji: "🌙" }
 ];
 
 const MAX_IMG_W = 900;
