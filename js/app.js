@@ -280,6 +280,14 @@ function downscaleImage(file) {
 addMealBtn.addEventListener("click", () => openMealModal());
 addCancelBtn.addEventListener("click", closeAddModal);
 
+// Klik izven kartice (na temno ozadje) zapre okno za dodajanje/urejanje.
+addOverlay.addEventListener("click", (e) => {
+  if (e.target === addOverlay) closeAddModal();
+});
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && !addOverlay.hidden) closeAddModal();
+});
+
 addImageFile.addEventListener("change", () => {
   const file = addImageFile.files[0];
   if (!file) return;
