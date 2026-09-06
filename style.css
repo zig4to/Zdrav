@@ -184,7 +184,8 @@ button, input, textarea, select {
   margin: 0 auto;
 }
 
-.brand { display: flex; align-items: center; gap: 14px; }
+/* flex-start: zgornji rob napisa "Zdrav" poravnan z vrhom ikone. */
+.brand { display: flex; align-items: flex-start; gap: 14px; }
 
 .brand-icon {
   flex: none;
@@ -204,13 +205,14 @@ button, input, textarea, select {
   margin: 0;
   font-size: 30px;
   font-weight: 800;
+  line-height: 1.05;
   letter-spacing: -0.02em;
   background: linear-gradient(90deg, #fff, #c8f5d6);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
 }
-.brand-text .tag { margin: 2px 0 0; color: var(--text-soft); font-size: 14px; }
+.brand-text .tag { margin: 2px 0 0; color: var(--text-soft); font-size: 14px; line-height: 1.1; }
 
 .random-btn {
   flex: none;
@@ -311,6 +313,7 @@ button, input, textarea, select {
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  cursor: pointer;
 }
 
 .meal-thumb-wrap { position: relative; }
@@ -355,15 +358,6 @@ button, input, textarea, select {
 
 .meal-body { padding: 10px 12px 12px; display: flex; flex-direction: column; gap: 6px; flex: 1; }
 .meal-name { font-weight: 700; font-size: 14.5px; }
-.meal-ingredients {
-  color: var(--text-soft);
-  font-size: 12.5px;
-  overflow: hidden;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  flex: 1;
-}
 
 /* ---------- Modali ---------- */
 .modal-overlay {
@@ -526,8 +520,44 @@ button, input, textarea, select {
 .result-ingredients { color: var(--text-soft); font-size: 14px; white-space: pre-wrap; }
 .result-empty { color: var(--text-soft); text-align: center; padding: 30px 6px; font-size: 14.5px; }
 
+/* ---------- Predogled obroka (klik na kartico) ---------- */
+.preview-card {
+  position: relative;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  width: 100%;
+  max-width: 420px;
+  max-height: 88vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.preview-image,
+.preview-placeholder {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  background: var(--card-2);
+  display: block;
+  flex: none;
+}
+.preview-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 52px;
+  color: var(--line);
+}
+.preview-text { padding: 16px 20px 20px; overflow-y: auto; }
+.preview-name { font-size: 20px; font-weight: 800; margin: 0 0 8px; }
+.preview-ingredients { color: var(--text-soft); font-size: 14px; white-space: pre-wrap; }
+
 @media (max-width: 480px) {
   .brand-text h1 { font-size: 26px; }
+  .brand-icon { width: 40px; height: 40px; border-radius: 12px; }
+  .brand-icon svg { width: 20px; height: 20px; }
   .hero { flex-direction: column; align-items: flex-start; }
   .random-btn {
     align-self: stretch;

@@ -115,7 +115,10 @@ function buildMealCard(meal) {
   editIcon.title = "Uredi obrok";
   editIcon.setAttribute("aria-label", "Uredi obrok");
   editIcon.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>`;
-  editIcon.addEventListener("click", () => openMealModal(meal));
+  editIcon.addEventListener("click", (e) => {
+    e.stopPropagation();
+    openMealModal(meal);
+  });
   thumbWrap.appendChild(editIcon);
 
   card.appendChild(thumbWrap);
@@ -128,16 +131,66 @@ function buildMealCard(meal) {
   name.textContent = meal.name;
   body.appendChild(name);
 
-  if (meal.ingredients) {
-    const ing = document.createElement("div");
-    ing.className = "meal-ingredients";
-    ing.textContent = meal.ingredients;
-    body.appendChild(ing);
-  }
-
+  // Sestavine se na kartici ne prikazujejo — vidne so v predogledu ob kliku.
   card.appendChild(body);
+  card.addEventListener("click", () => openPreview(meal));
   return card;
 }
+
+// ------------------------------------------------------------ predogled obroka
+const previewOverlay = document.getElementById("previewOverlay");
+const previewBody = document.getElementById("previewBody");
+let previewUrl = null;
+
+function openPreview(meal) {
+  previewBody.innerHTML = "";
+  if (previewUrl) { URL.revokeObjectURL(previewUrl); previewUrl = null; }
+
+  if (meal.image) {
+    previewUrl = URL.createObjectURL(meal.image);
+    const img = document.createElement("img");
+    img.className = "preview-image";
+    img.src = previewUrl;
+    img.alt = meal.name;
+    previewBody.appendChild(img);
+  } else {
+    const ph = document.createElement("div");
+    ph.className = "preview-placeholder";
+    ph.textContent = "🍽️";
+    previewBody.appendChild(ph);
+  }
+
+  const text = document.createElement("div");
+  text.className = "preview-text";
+
+  const name = document.createElement("div");
+  name.className = "preview-name";
+  name.textContent = meal.name;
+  text.appendChild(name);
+
+  if (meal.ingredients) {
+    const ing = document.createElement("div");
+    ing.className = "preview-ingredients";
+    ing.textContent = meal.ingredients;
+    text.appendChild(ing);
+  }
+
+  previewBody.appendChild(text);
+  previewOverlay.hidden = false;
+}
+
+function closePreview() {
+  previewOverlay.hidden = true;
+  if (previewUrl) { URL.revokeObjectURL(previewUrl); previewUrl = null; }
+}
+
+// Klik izven kartice zapre predogled.
+previewOverlay.addEventListener("click", (e) => {
+  if (e.target === previewOverlay) closePreview();
+});
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && !previewOverlay.hidden) closePreview();
+});
 
 // ---------------------------------------------------------- dodaj/uredi obrok
 const addOverlay = document.getElementById("addOverlay");
