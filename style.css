@@ -529,7 +529,11 @@ button, input, textarea, select {
 @media (max-width: 480px) {
   .brand-text h1 { font-size: 26px; }
   .hero { flex-direction: column; align-items: flex-start; }
-  .random-btn { align-self: stretch; justify-content: center; }
+  .random-btn {
+    align-self: stretch;
+    justify-content: center;
+    margin-inline: 26px;
+  }
 
   /* Kategorije: 2 zavihka v vrsti namesto vodoravnega drsenja. */
   .tabs {
@@ -629,6 +633,12 @@ button, input, textarea, select {
 #appRoot[hidden] { display: none; }
 
 .hero { padding-right: 64px; }
+/* Na mobilnem je glava stolpec: samo znamka (zgornja vrstica) potrebuje prostor
+   za fiksno ikono računa; gumb spodaj pa naj ima enak razmik levo in desno. */
+@media (max-width: 480px) {
+  .hero { padding-right: 20px; }
+  .brand { padding-right: 48px; }
+}
 
 /* ---------- Popravki za svetlo temo ---------- */
 :root[data-theme="light"] .brand-text h1 {
