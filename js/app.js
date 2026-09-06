@@ -246,7 +246,9 @@ function openMealModal(meal) {
   }
 
   addOverlay.hidden = false;
-  addNameInput.focus();
+  // Pri urejanju ne postavljamo kurzorja v polje — na mobilnem bi se takoj
+  // odprla tipkovnica. Uporabnik sam klikne polje, ki ga zeli urediti.
+  if (!meal) addNameInput.focus();
 }
 
 function closeAddModal() {
