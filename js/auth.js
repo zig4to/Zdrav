@@ -49,11 +49,35 @@
   var mode = "signin"; // "signin" | "signup"
   var appStarted = false;
   var pendingAuthError = null;
+  var ssoAdopting = false;
 
   // Ali smo prisli sem prek povezave za ponastavitev gesla iz e-poste?
   // Beremo hash sinhrono, se preden ga Supabase klient pocisti.
   var recovering = location.hash.indexOf("type=recovery") !== -1;
   handleHashError();
+
+  // Prijava v ozadju iz huba (TomsStudios): povezava do te aplikacije lahko
+  // nosi #sb_at=<access_token>&sb_rt=<refresh_token>. Ce sta prisotna,
+  // prevzamemo sejo in ju odstranimo iz naslovne vrstice. Neuspeh je tih —
+  // aplikacija pade nazaj na lasten prijavni zaslon.
+  function consumeSsoHash() {
+    var h = location.hash || "";
+    if (h.indexOf("sb_at=") === -1 || h.indexOf("sb_rt=") === -1) {
+      return Promise.resolve();
+    }
+    var params = new URLSearchParams(h.replace(/^#/, ""));
+    var at = params.get("sb_at");
+    var rt = params.get("sb_rt");
+    params.delete("sb_at");
+    params.delete("sb_rt");
+    var rest = params.toString();
+    history.replaceState(null, "", location.pathname + location.search + (rest ? "#" + rest : ""));
+    if (!at || !rt) return Promise.resolve();
+    ssoAdopting = true;
+    return sb.auth.setSession({ access_token: at, refresh_token: rt })
+      .then(function () {})
+      .catch(function () {});
+  }
 
   function handleHashError() {
     var h = location.hash || "";
@@ -223,15 +247,18 @@
 
   setMode("signin");
 
-  if (recovering) {
-    showRecovery();
-  } else {
+  consumeSsoHash().then(function () {
+    ssoAdopting = false;
+    if (recovering) {
+      showRecovery();
+      return;
+    }
     sb.auth.getSession().then(function (res) {
       if (recovering) return;
       if (res.data && res.data.session) showApp(res.data.session);
       else showAuth();
     });
-  }
+  });
 
   sb.auth.onAuthStateChange(function (event, session) {
     if (event === "PASSWORD_RECOVERY") { showRecovery(); return; }
@@ -239,6 +266,9 @@
     // enkrat, bi se zacetni izris zgodil dvakrat (npr. podvojeno sporocilo
     // "Ni se obrokov v tej kategoriji").
     if (event === "INITIAL_SESSION") return;
+    // SIGNED_IN, ki ga sprozi prevzem seje iz huba (setSession) — zacetni
+    // izris naredi getSession() zgoraj, da se ne zgodi dvakrat.
+    if (ssoAdopting) return;
     if (recovering) return;
     if (session) showApp(session);
     else showAuth();
