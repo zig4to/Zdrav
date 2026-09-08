@@ -60,6 +60,10 @@
   // nosi #sb_at=<access_token>&sb_rt=<refresh_token>. Ce sta prisotna,
   // prevzamemo sejo in ju odstranimo iz naslovne vrstice. Neuspeh je tih —
   // aplikacija pade nazaj na lasten prijavni zaslon.
+  function stopSsoLoader() {
+    document.documentElement.classList.remove("sso-pending");
+  }
+
   function consumeSsoHash() {
     var h = location.hash || "";
     if (h.indexOf("sb_at=") === -1 || h.indexOf("sb_rt=") === -1) {
@@ -72,11 +76,15 @@
     params.delete("sb_rt");
     var rest = params.toString();
     history.replaceState(null, "", location.pathname + location.search + (rest ? "#" + rest : ""));
-    if (!at || !rt) return Promise.resolve();
+    if (!at || !rt) { stopSsoLoader(); return Promise.resolve(); }
     ssoAdopting = true;
+    // Nalagalnik je ze viden (pre-paint skripta v <head>). Varovalo, ce se
+    // izmenjava nikoli ne zakljuci (Supabase nedosegljiv).
+    var safety = setTimeout(stopSsoLoader, 10000);
     return sb.auth.setSession({ access_token: at, refresh_token: rt })
       .then(function () {})
-      .catch(function () {});
+      .catch(function () {})
+      .then(function () { clearTimeout(safety); stopSsoLoader(); });
   }
 
   function handleHashError() {
