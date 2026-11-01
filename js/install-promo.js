@@ -284,16 +284,13 @@
     return;
   }
   if (!window.InstallPromo) return;
-  var shown = false;
-  function show() {
-    if (shown) return;
-    shown = true;
-    window.InstallPromo._open({ explicit: true });
-  }
-  window.addEventListener("beforeinstallprompt", function () { setTimeout(show, 150); });
-  // Brez beforeinstallprompt (iOS, že nameščena, brskalnik brez podpore)
-  // po kratkem čakanju pokažemo navodila.
-  var ios = /iPhone|iPad|iPod/i.test(navigator.userAgent) ||
-            (/Macintosh/.test(navigator.userAgent) && navigator.maxTouchPoints > 1);
-  setTimeout(show, ios ? 600 : 2500);
+  // Okno takoj: brez ponudbe brskalnika pokaže navodila, ko ponudba pride
+  // (beforeinstallprompt), se odprto okno preklopi na gumb "Namesti".
+  window.InstallPromo._open({ explicit: true });
+  window.addEventListener("beforeinstallprompt", function () {
+    setTimeout(function () {
+      var ov = document.querySelector(".ip-overlay");
+      if (ov && !ov.hidden) window.InstallPromo._open({ explicit: true });
+    }, 50);
+  });
 })();
