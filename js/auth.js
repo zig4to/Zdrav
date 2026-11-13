@@ -56,7 +56,7 @@
   var recovering = location.hash.indexOf("type=recovery") !== -1;
   handleHashError();
 
-  // Prijava v ozadju iz huba (TomsStudios): povezava do te aplikacije lahko
+  // Prijava v ozadju iz huba (Bitneverse): povezava do te aplikacije lahko
   // nosi #sb_at=<access_token>&sb_rt=<refresh_token>. Ce sta prisotna,
   // prevzamemo sejo in ju odstranimo iz naslovne vrstice. Neuspeh je tih —
   // aplikacija pade nazaj na lasten prijavni zaslon.

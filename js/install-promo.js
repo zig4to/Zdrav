@@ -253,7 +253,7 @@
   };
 })();
 
-/* Gumb za namestitev na kartici v TomStudios odpre aplikacijo s ?namesti=1:
+/* Gumb za namestitev na kartici v Bitneverse odpre aplikacijo s ?namesti=1:
    okno za namestitev pokažemo takoj, ne glede na števec prikazov. Brskalnik
    lahko ponudi namestitev le za stran, ki je odprta, zato hub tega ne more
    narediti sam. */
